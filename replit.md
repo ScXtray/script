@@ -1,45 +1,72 @@
-# [Project name]
+# Xtray Script
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Script hub Roblox gratis tanpa key, mendukung Blox Fruits, Meme Sea, dan Vox Seas.
 
-## Run & Operate
+## Loadstring
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/XtrayScript/XtrayScript/refs/heads/main/main.luau"))()
+```
 
-## Stack
+Dengan settings (Blox Fruits):
+```lua
+local Settings = {
+  JoinTeam = "Pirates"; -- Pirates/Marines
+  Translator = true;    -- true/false
+}
+loadstring(game:HttpGet("https://raw.githubusercontent.com/XtrayScript/XtrayScript/refs/heads/main/main.luau"))(Settings)
+```
 
-- pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+## Struktur File
 
-## Where things live
+```
+main.luau                  — Entry point, deteksi game & routing
+Games/
+  BloxFruits.luau          — Script Blox Fruits (file utama, ~2961 baris)
+  MemeSea.luau             — Script Meme Sea
+  VoxSeas.luau             — Script Vox Seas
+Library/
+  main.luau                — UI Library utama
+Utils/Module/
+  Movement.luau            — Modul gerakan karakter
+  FullBright.luau          — Fullbright toggle
+  AntiReset.luau           — Anti reset / anti death
+  BloxFruitsESP.luau       — ESP untuk Blox Fruits
+  FastAttack.luau          — Fast attack module
+  BloxFruitsAimBotModule.luau — AimBot module
+```
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+## Game yang Didukung
 
-## Architecture decisions
+- **Blox Fruits** — Sea 1, 2, 3 (PlaceId lama & baru)
+- **Meme Sea**
+- **Vox Seas**
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+## Status Pengembangan
 
-## Product
+### Selesai
+- Script bisa dijalankan di PC dan Mobile
+- Kill Aura (tab Farm)
+- Utilitas Farm (Walk in Water, Disable Damage Counter, Remove VFX)
+- AimBot, ESP, Auto Stats, Auto Quest, Auto Boss, Auto Fishing, Mastery Farm, Sea Event Farm, Extras, Teleport
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+### Dalam Pengembangan / Dihapus Sementara
+- Auto Farm (loop & error — dihapus dari tab)
+- Auto Farm Level (dihapus)
+- Fast Attack (dihapus dari tab Farm)
+- Super Clique (dihapus dari tab Farm)
+- Main Farm / Farm Settings (dihapus)
 
-## User preferences
+### Tab Farm Saat Ini (BloxFruits.luau)
+- **Kill Aura** — otomatis membunuh musuh dalam radius
+- **Utilitas** — Walk in Water, Disable Damage Counter, Remove Effects (VFX)
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+## Stack / Bahasa
 
-## Gotchas
+- Luau (Roblox scripting language)
+- Tidak ada backend, tidak ada database
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+## User Preferences
 
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- Tab Farm hanya berisi: Kill Aura dan Utilitas Farm
+- Fitur Auto Farm dihapus sementara karena masalah stuck loop dan crash
