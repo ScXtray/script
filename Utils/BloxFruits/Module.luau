@@ -192,8 +192,8 @@ return X end
 
 
 local ac=(function()
-local ac=f.rz_hook_manager or ab()
-f.rz_hook_manager=ac
+local ac=f.xt_hook_manager or ab()
+f.xt_hook_manager=ac
 return ac
 end)()
 
@@ -974,7 +974,7 @@ local au={}
 
 local av=aa({"Z","X","C","V","F"},true)
 
-local aw=f.rz_EnabledOptions;
+local aw=f.xt_EnabledOptions;
 local ax;
 
 local ay=0;
@@ -1037,8 +1037,8 @@ end end local aC=function()
 
 
 
-if f.rz_enabled_bypass or not ad.WALKSPEED_BYPASS_ENABLED then return end
-f.rz_enabled_bypass=true
+if f.xt_enabled_bypass or not ad.WALKSPEED_BYPASS_ENABLED then return end
+f.xt_enabled_bypass=true
 
 local aC=ac.HookProperty
 
@@ -1055,7 +1055,7 @@ end)end local aD=function()
 
 
 if not ad.SILENT_AIM_ENABLED then return end
-if f.rz_original_namecall then return end
+if f.xt_original_namecall then return end
 
 B:Connect(aB)
 
@@ -1108,7 +1108,7 @@ return aG(aH,...)
 end
 end)
 
-f.rz_original_namecall=aG end
+f.xt_original_namecall=aG end
 
 
 as.HookGame=function()

@@ -126,7 +126,7 @@ end
 local s={
 Information={
 Version="v2.0.1",
-GitHubOwner="tlredz"
+GitHubOwner="ScXtray"
 },
 Default={
 Theme="Darker",
