@@ -6,10 +6,10 @@
 
 ## Apa itu project ini?
 
-**Xtray Hub** adalah kumpulan Roblox Luau script untuk automasi game — gratis, keyless, untuk Blox Fruits dan Meme Sea.
+**Xtray Hub** adalah kumpulan Roblox Luau script untuk automasi game — gratis, keyless, untuk Blox Fruits (game lain bisa ditambahkan nanti).
 
-- GitHub Repo: https://github.com/ScXtray/script
-- Owner GitHub: `ScXtray`
+- GitHub Repo  : https://github.com/ScXtray/script
+- Owner GitHub : `ScXtray`
 - Bahasa komunikasi dengan user: **Indonesia**
 
 ---
@@ -24,39 +24,38 @@ bash sync-github.sh "pesan commit"
 
 Script ini otomatis:
 1. Clone repo terbaru
-2. Hapus folder lama di clone
+2. Hapus folder lama di clone (mencegah duplikasi)
 3. Copy file terbaru dari workspace
 4. Commit & push ke `main`
 
-> **PENTING:** Jangan pakai `cp -r Games "$WORK_DIR/Games"` — ini akan buat `Games/Games/` (duplikat). Script sudah diperbaiki untuk menghindari ini.
+Secret yang dibutuhkan: `GITHUB_TOKEN` (sudah ada di Replit Secrets)
 
-Secret yang dibutuhkan: `GITHUB_TOKEN` (GitHub Classic Token milik ScXtray, sudah ada di Replit Secrets)
+> **JANGAN** pakai `cp -r Games "$WORK_DIR/Games"` — akan buat `Games/Games/` duplikat.
+> Sync script sudah diperbaiki untuk menghindari ini.
 
 ---
 
-## Struktur Folder
+## Struktur Folder (terkini)
 
 ```
 /
 ├── Games/
-│   ├── BloxFruits.luau       ← Script utama Blox Fruits (CLEAN, bisa dibaca)
-│   ├── BLOX-FRUITS-BETA.lua  ← Script beta (ter-obfuscate, jangan diedit)
-│   └── MemeSea.luau          ← Script Meme Sea
+│   └── BloxFruits.luau         ← Script utama Blox Fruits (bersih, terbaca)
 │
 ├── Utils/
 │   ├── BloxFruits/
-│   │   ├── Module.luau       ← Module utama BF (logic lengkap: farm, aim, hop)
-│   │   ├── Codes.json        ← Daftar redeem codes BF
+│   │   ├── Module.luau          ← Logic utama BF (farm, aim, hop, inventory, dll)
+│   │   ├── Codes.json           ← Daftar redeem codes Blox Fruits
 │   │   └── GameModules/
-│   │       ├── Quests.lua    ← Data quest per area (level req, enemy, dll)
-│   │       └── GuideModule.lua ← Nama NPC quest giver per quest key
+│   │       ├── Quests.lua       ← Data quest per area (level req, enemy, dll)
+│   │       └── GuideModule.lua  ← Nama NPC quest giver per quest key
 │   └── MemeSea/
-│       └── Module.luau
+│       └── Module.luau          ← Module Meme Sea (bersih, terbaca, 410 baris)
 │
 ├── Library/
-│   ├── main.luau             ← Library UI utama (ScreenGui, toggle, dll)
+│   ├── main.luau                ← Library UI utama (ScreenGui, theme, toggle)
 │   └── Utils/
-│       └── Icons.lua
+│       └── Icons.lua            ← Icon assets
 │
 ├── Translator/
 │   ├── BloxFruits/
@@ -66,10 +65,11 @@ Secret yang dibutuhkan: `GITHUB_TOKEN` (GitHub Classic Token milik ScXtray, suda
 │   └── MemeSea/
 │       └── Portuguese.json
 │
-├── main.luau                 ← Entry point (loadstring dari Roblox)
-├── README.md                 ← Readme publik di GitHub
-├── sync-github.sh            ← Script sync ke GitHub
-└── CONTEXT.md                ← File ini
+├── main.luau                    ← Entry point (loadstring dari Roblox)
+├── README.md                    ← Readme publik
+├── CONTEXT.md                   ← File ini
+├── CHANGELOG.md                 ← Log semua perubahan
+└── sync-github.sh               ← Script sync ke GitHub (hanya di Replit lokal)
 ```
 
 ---
@@ -81,23 +81,29 @@ User load script di Roblox dengan:
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ScXtray/script/refs/heads/main/main.luau"))()
 ```
 
-`main.luau` mendeteksi `game.PlaceId` lalu load script yang sesuai:
-- PlaceId Blox Fruits → load `Games/BloxFruits.luau`
-- PlaceId Meme Sea → load `Games/MemeSea.luau`
+`main.luau` mendeteksi `game.GameId` lalu load script yang sesuai:
+- GameId `994732206` → load `Games/BloxFruits.luau`
 
-URL base di `main.luau`:
+URL base:
 ```lua
-urls.Owner = "https://raw.githubusercontent.com/ScXtray/"
+urls.Owner      = "https://raw.githubusercontent.com/ScXtray/"
 urls.Repository = urls.Owner .. "script/refs/heads/main/"
+urls.Translator = urls.Repository .. "Translator/"
+urls.Utils      = urls.Repository .. "Utils/"
 ```
+
+Global variable debounce menggunakan prefix `xt_` (bukan `rz_` lagi):
+- `xt_execute_debounce`
+- `xt_added_teleport_queue`
+- `xt_error_message`
 
 ---
 
 ## Script Blox Fruits (`Games/BloxFruits.luau`)
 
-Script ini **bersih dan terbaca** (dibuat ulang dari awal karena yang lama ter-obfuscate).
+Script ini **bersih dan terbaca** — dibuat ulang dari awal karena yang lama ter-obfuscate.
 
-Fitur yang ada:
+Fitur yang ada (semua bisa toggle via Config di atas file):
 | Fitur | Config Key |
 |-------|-----------|
 | Auto Farm (kill + quest) | `AutoFarm`, `AutoQuest` |
@@ -114,45 +120,53 @@ Fitur yang ada:
 | Redeem Codes | otomatis saat load |
 | Translator | `Translator` |
 
-Config ada di bagian atas file, mudah diubah.
-
 ---
 
 ## Module Utama (`Utils/BloxFruits/Module.luau`)
 
-File ini **tidak ter-obfuscate** dan berisi logic lengkap:
+Tidak ter-obfuscate. Berisi:
 - `Services.Network` — InvokeCommF, RemoteFunction, RemoteEvent
 - `Services.Enemies` — tracking musuh, boss spawns, bring mobs
-- `Services.Inventory` — item, mastery, unlock status
-- `Services.Hooking` — silent aim, walkspeed bypass
+- `Services.Inventory` — item, mastery, unlock
+- `Services.Hooking` — silent aim, walkspeed bypass (`xt_` prefix)
 - `Services.FastAttack` — auto attack logic
 - `Services.ToolService` — equip tool, buso haki
 - `Services.PlayerManager` — posisi player
-- `ServerHop`, `GetRaidIsland`, `Shop` data, dll
+
+---
+
+## Library UI (`Library/main.luau`)
+
+- Versi: `v2.0.1`
+- `GitHubOwner = "ScXtray"` ✅
+- Internal cache key: `"xtray-library-v5"`
+- Berisi ScreenGui, tema (Darker default), toggle system
 
 ---
 
 ## Branding
 
-- Nama: **Xtray Hub**
-- Semua file sudah di-rebrand dari "Redz Hub" → "Xtray Hub"
-- Internal string: `[XTRAY HUB]`, `Xtray Hub Error`, `xtray-library-v5`
+- Nama resmi: **Xtray Hub**
+- Semua referensi "Redz Hub" sudah diganti ke "Xtray Hub"
+- Global prefix: `xt_` (sebelumnya `rz_`)
+- Library key: `xtray-library-v5`
 
 ---
 
 ## Yang Belum Dibuat / TODO
 
-- [ ] GUI in-game (ScreenGui toggle untuk fitur)
-- [ ] Script Meme Sea (`Games/MemeSea.luau`) — masih pakai yang lama
-- [ ] Support game baru selain BF dan Meme Sea
+- [ ] GUI in-game (ScreenGui toggle untuk aktifkan/matikan fitur)
+- [ ] Script Meme Sea baru yang bersih (Games/MemeSea.luau dihapus karena obfuscated)
+- [ ] Support game lain selain Blox Fruits
 
 ---
 
 ## Tips untuk AI Agent
 
-1. **Jangan baca semua file sekaligus** — gunakan file ini sebagai panduan, lalu baca file spesifik yang dibutuhkan saja.
-2. **Selalu push ke GitHub setelah edit** dengan `bash sync-github.sh "pesan"`.
-3. **`GITHUB_TOKEN`** sudah ada di Replit Secrets — langsung bisa dipakai.
-4. **Jangan obfuscate/lock** file `Games/BloxFruits.luau` — user minta script yang terbaca.
-5. **Sync script sudah diperbaiki** — tidak akan buat folder duplikat lagi.
-6. **Bahasa dengan user: Indonesia**.
+1. **Baca CHANGELOG.md** untuk tahu semua yang sudah pernah diubah.
+2. **Jangan baca semua file** — pakai file ini sebagai panduan, baca file spesifik sesuai kebutuhan.
+3. **Selalu push setelah edit:** `bash sync-github.sh "pesan"`.
+4. **`GITHUB_TOKEN`** sudah ada di Replit Secrets.
+5. **Jangan obfuscate** `Games/BloxFruits.luau` — user minta script yang terbaca.
+6. **Prefix global vars = `xt_`** (bukan `rz_`).
+7. **Bahasa dengan user: Indonesia**.
