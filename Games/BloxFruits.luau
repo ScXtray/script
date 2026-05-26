@@ -1,5 +1,5 @@
 --[[
-    REDZ HUB - Blox Fruits Script
+    XTRAY HUB - Blox Fruits Script
     Repo: https://github.com/ScXtray/script
     Keyless & Free
 --]]
@@ -124,7 +124,7 @@ end
 
 local function Notify(text)
     local msg = Instance.new("Message", workspace)
-    msg.Text   = "[REDZ HUB] " .. text
+    msg.Text   = "[XTRAY HUB] " .. text
     game:GetService("Debris"):AddItem(msg, 3)
 end
 
@@ -559,7 +559,7 @@ end
 -- FERTIG
 -- ============================================================
 
-Notify("REDZ HUB loaded! Auto Farm: " .. tostring(Config.AutoFarm))
+Notify("XTRAY HUB loaded! Auto Farm: " .. tostring(Config.AutoFarm))
 
 return {
     Config    = Config,

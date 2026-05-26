@@ -2180,7 +2180,7 @@ elseif e.IgnoreErrors then
 local aA,aB=pcall(az)
 
 if not aA then
-warn(`redz Hub Error in {e.RunningOption} -> {aB}`)
+warn(`Xtray Hub Error in {e.RunningOption} -> {aB}`)
 end
 
 f.OnFarm=(not aA and f.OnFarm)or aB
@@ -2411,7 +2411,7 @@ task.spawn(aG,aH)
 for aJ=1,#aE do
 local aK,aL=pcall(aE[aJ],aH,aI)
 if not aK then
-warn(`redz Hub -> failed to check if @{aH.Name} is a Staff: {aL}`)
+warn(`Xtray Hub -> failed to check if @{aH.Name} is a Staff: {aL}`)
 elseif aL then
 return aF(aH)
 end
