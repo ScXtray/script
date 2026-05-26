@@ -10,24 +10,25 @@ local fetcher, Settings = ...
 -- CONFIG (semua default false — diubah via GUI toggle)
 -- ============================================================
 local Config = {
-    AutoFarm         = false,
-    AutoQuest        = false,
-    AutoAttack       = false,
-    AutoShoot        = false,
-    SilentAim        = false,
-    AimBotGun        = false,
-    Noclip           = false,
-    BringMobs        = false,
-    BringDistance    = 15,
-    AutoServerHop    = false,
+    AutoFarm            = false,
+    AutoQuest           = false,
+    AutoAttack          = false,
+    AutoShoot           = false,
+    SilentAim           = false,
+    AimBotGun           = false,
+    Noclip              = false,
+    BringMobs           = false,
+    BringDistance       = 15,
+    AutoServerHop       = false,
     ServerHopMinPlayers = 8,
-    AutoChest        = false,
-    AutoBerry        = false,
-    AutoBuso         = false,
-    WalkSpeedBypass  = false,
-    WalkSpeed        = 24,
-    JoinTeam         = Settings and Settings.JoinTeam or "Pirates",
-    Translator       = Settings and Settings.Translator or false,
+    AutoChest           = false,
+    AutoBerry           = false,
+    AutoBuso            = false,
+    WalkSpeedBypass     = false,
+    WalkSpeed           = 24,
+    ESPEnabled          = false,
+    ESPColor            = Color3.fromRGB(255, 0, 0),
+    JoinTeam            = Settings and Settings.JoinTeam or "Pirates",
 }
 
 -- ============================================================
@@ -50,9 +51,7 @@ LocalPlayer.CharacterAdded:Connect(function(char)
     Humanoid  = char:WaitForChild("Humanoid")
     RootPart  = char:WaitForChild("HumanoidRootPart")
     task.wait(1)
-    if Config.WalkSpeedBypass then
-        ApplyWalkSpeed()
-    end
+    if Config.WalkSpeedBypass then ApplyWalkSpeed() end
 end)
 
 -- ============================================================
@@ -60,16 +59,13 @@ end)
 -- ============================================================
 local Remotes = ReplicatedStorage:WaitForChild("Remotes")
 local CommF   = Remotes:WaitForChild("CommF_")
-local CommE   = Remotes:WaitForChild("CommE")
 
 -- ============================================================
 -- WORLD REFERENCES
 -- ============================================================
-local WorldOrigin    = workspace:WaitForChild("_WorldOrigin")
-local EnemySpawns    = WorldOrigin:WaitForChild("EnemySpawns")
-local Locations      = WorldOrigin:WaitForChild("Locations")
-local EnemiesFolder  = workspace:WaitForChild("Enemies")
-local ChestsFolder   = workspace:WaitForChild("ChestModels")
+local WorldOrigin   = workspace:WaitForChild("_WorldOrigin")
+local EnemiesFolder = workspace:WaitForChild("Enemies")
+local ChestsFolder  = workspace:WaitForChild("ChestModels")
 
 -- ============================================================
 -- UTILITIES
@@ -112,16 +108,65 @@ end
 local Library = fetcher.load("{Repository}Library/main.luau")()
 
 local Window = Library:MakeWindow({
-    Title       = "Xtray Hub",
-    SubTitle    = "Blox Fruits",
+    Title        = "Xtray Hub",
+    SubTitle     = "Blox Fruits",
     ScriptFolder = "XtrayHub",
 })
 
+-- Minimize dengan LeftControl (sama seperti di screenshot)
+Window:NewMinimizer(Enum.KeyCode.LeftControl)
+
 -- ============================================================
--- TAB: FARM
+-- TAB 1 — INFO / DISCORD
 -- ============================================================
 
-local FarmTab = Window:MakeTab({ Title = "Farm", Icon = "rbxassetid://10709791437" })
+local InfoTab = Window:MakeTab({ Title = "Discord", Icon = "link" })
+
+InfoTab:AddSection("Xtray Hub")
+
+InfoTab:AddButton({
+    Title    = "Salin Link Discord",
+    Callback = function()
+        setclipboard("https://discord.gg/xtrayhub")
+        Window:Notify({
+            Title   = "Discord",
+            Content = "Link Discord sudah disalin!",
+            Time    = 3,
+        })
+    end,
+})
+
+InfoTab:AddSection("Info Script")
+
+InfoTab:AddButton({
+    Title    = "GitHub Repo",
+    Callback = function()
+        setclipboard("https://github.com/ScXtray/script")
+        Window:Notify({
+            Title   = "GitHub",
+            Content = "Link GitHub sudah disalin!",
+            Time    = 3,
+        })
+    end,
+})
+
+InfoTab:AddButton({
+    Title    = "Loadstring (Salin)",
+    Callback = function()
+        setclipboard('loadstring(game:HttpGet("https://raw.githubusercontent.com/ScXtray/script/refs/heads/main/main.luau"))()')
+        Window:Notify({
+            Title   = "Loadstring",
+            Content = "Loadstring sudah disalin!",
+            Time    = 3,
+        })
+    end,
+})
+
+-- ============================================================
+-- TAB 2 — FARM
+-- ============================================================
+
+local FarmTab = Window:MakeTab({ Title = "Farm", Icon = "wheat" })
 
 FarmTab:AddSection("Auto Farm")
 
@@ -153,7 +198,7 @@ FarmTab:AddToggle({
     Flag     = "AutoShoot",
 })
 
-FarmTab:AddSection("Farming Tools")
+FarmTab:AddSection("Bring Mobs")
 
 FarmTab:AddToggle({
     Title    = "Bring Mobs",
@@ -163,13 +208,13 @@ FarmTab:AddToggle({
 })
 
 FarmTab:AddSlider({
-    Title    = "Bring Distance",
-    Min      = 5,
-    Max      = 60,
+    Title     = "Bring Distance",
+    Min       = 5,
+    Max       = 60,
     Increment = 1,
-    Default  = 15,
-    Callback = function(v) Config.BringDistance = v end,
-    Flag     = "BringDistance",
+    Default   = 15,
+    Callback  = function(v) Config.BringDistance = v end,
+    Flag      = "BringDistance",
 })
 
 FarmTab:AddSection("Chest & Berry")
@@ -189,19 +234,17 @@ FarmTab:AddToggle({
 })
 
 -- ============================================================
--- TAB: COMBAT
+-- TAB 3 — COMBAT
 -- ============================================================
 
-local CombatTab = Window:MakeTab({ Title = "Combat", Icon = "rbxassetid://10709791437" })
+local CombatTab = Window:MakeTab({ Title = "Combat", Icon = "swords" })
 
-CombatTab:AddSection("Aim")
+CombatTab:AddSection("Silent Aim")
 
 CombatTab:AddToggle({
     Title    = "Silent Aim",
     Default  = false,
-    Callback = function(v)
-        Config.SilentAim = v
-    end,
+    Callback = function(v) Config.SilentAim = v end,
     Flag     = "SilentAim",
 })
 
@@ -222,28 +265,113 @@ CombatTab:AddToggle({
 })
 
 -- ============================================================
--- TAB: PLAYER
+-- TAB 4 — TELEPORT
 -- ============================================================
 
-local PlayerTab = Window:MakeTab({ Title = "Player", Icon = "rbxassetid://10709791437" })
+local TpTab = Window:MakeTab({ Title = "Teleport", Icon = "mappin" })
 
-PlayerTab:AddSection("Movement")
+TpTab:AddSection("Sea 1")
 
-PlayerTab:AddToggle({
+local Sea1Locations = {
+    { "Starter Island",    Vector3.new(914.9, 31.5, 1496.2)  },
+    { "Marine Starter",    Vector3.new(-966.8, 5.4, -3678.5) },
+    { "Jungle",            Vector3.new(-1768, 9, -321)        },
+    { "Pirate Village",    Vector3.new(-1376, 7, 1590)        },
+    { "Desert",            Vector3.new(935, 6, -673)          },
+    { "Frozen Village",    Vector3.new(1144, 9, 672)          },
+    { "Marine Fortress",   Vector3.new(-2130, 8, -19)         },
+    { "Skylands",          Vector3.new(-4697, 875, -2039)     },
+}
+
+for _, loc in ipairs(Sea1Locations) do
+    local name, pos = loc[1], loc[2]
+    TpTab:AddButton({
+        Title    = name,
+        Callback = function()
+            Teleport(CFrame.new(pos))
+            Window:Notify({
+                Title   = "Teleport",
+                Content = "Teleport ke " .. name,
+                Time    = 2,
+            })
+        end,
+    })
+end
+
+TpTab:AddSection("Sea 2")
+
+local Sea2Locations = {
+    { "Flower Hill",       Vector3.new(-1481, 6, -8290)   },
+    { "Ice Castle",        Vector3.new(3, 6, -10375)       },
+    { "Risen Zombie",      Vector3.new(-1244, 7, -7820)    },
+    { "Graveyard",         Vector3.new(-1244, 7, -7820)    },
+    { "Kingdom of Rose",   Vector3.new(-205, 57, -11245)   },
+    { "Green Zone",        Vector3.new(4319, 61, -7644)    },
+    { "Colosseum",         Vector3.new(924, 97, -9675)     },
+    { "Underwater City",   Vector3.new(-6, 6, -14714)      },
+    { "Fountain City",     Vector3.new(-3437, 62, -11140)  },
+}
+
+for _, loc in ipairs(Sea2Locations) do
+    local name, pos = loc[1], loc[2]
+    TpTab:AddButton({
+        Title    = name,
+        Callback = function()
+            Teleport(CFrame.new(pos))
+            Window:Notify({
+                Title   = "Teleport",
+                Content = "Teleport ke " .. name,
+                Time    = 2,
+            })
+        end,
+    })
+end
+
+-- ============================================================
+-- TAB 5 — VISUAL
+-- ============================================================
+
+local VisualTab = Window:MakeTab({ Title = "Visual", Icon = "eye" })
+
+VisualTab:AddSection("ESP")
+
+VisualTab:AddToggle({
+    Title    = "ESP Musuh",
+    Default  = false,
+    Callback = function(v)
+        Config.ESPEnabled = v
+        if v then
+            StartESP()
+        else
+            StopESP()
+        end
+    end,
+    Flag     = "ESPEnabled",
+})
+
+VisualTab:AddSection("Movement")
+
+VisualTab:AddToggle({
     Title    = "Noclip",
     Default  = false,
     Callback = function(v) Config.Noclip = v end,
     Flag     = "Noclip",
 })
 
+-- ============================================================
+-- TAB 6 — PLAYER
+-- ============================================================
+
+local PlayerTab = Window:MakeTab({ Title = "Player", Icon = "shield" })
+
+PlayerTab:AddSection("WalkSpeed")
+
 PlayerTab:AddToggle({
     Title    = "WalkSpeed Bypass",
     Default  = false,
     Callback = function(v)
         Config.WalkSpeedBypass = v
-        if v then
-            ApplyWalkSpeed()
-        end
+        if v then ApplyWalkSpeed() end
     end,
     Flag     = "WalkSpeedBypass",
 })
@@ -256,18 +384,16 @@ PlayerTab:AddSlider({
     Default   = 24,
     Callback  = function(v)
         Config.WalkSpeed = v
-        if Config.WalkSpeedBypass then
-            ApplyWalkSpeed()
-        end
+        if Config.WalkSpeedBypass then ApplyWalkSpeed() end
     end,
     Flag      = "WalkSpeed",
 })
 
 -- ============================================================
--- TAB: MISC
+-- TAB 7 — MISC
 -- ============================================================
 
-local MiscTab = Window:MakeTab({ Title = "Misc", Icon = "rbxassetid://10709791437" })
+local MiscTab = Window:MakeTab({ Title = "Misc", Icon = "settings" })
 
 MiscTab:AddSection("Server")
 
@@ -302,10 +428,14 @@ MiscTab:AddButton({
     Debounce = 10,
 })
 
--- Notify setelah GUI terbuka
+-- ============================================================
+-- NOTIFIKASI AWAL (seperti screenshot)
+-- ============================================================
+
 Window:Notify({
-    Title   = "Xtray Hub",
-    Content = "Script berhasil dimuat! Aktifkan fitur via toggle.",
+    Title   = "Script Loaded",
+    Content = "Xtray Hub berhasil dimuat! Tekan 'LeftControl' untuk minimize.",
+    Icon    = "star",
     Time    = 5,
 })
 
@@ -317,14 +447,13 @@ function ApplyWalkSpeed()
     local char = LocalPlayer.Character
     if not char then return end
     local hum = char:FindFirstChildOfClass("Humanoid")
-    if hum then
-        hum.WalkSpeed = Config.WalkSpeed
-        hum:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-            if Config.WalkSpeedBypass and hum.WalkSpeed < Config.WalkSpeed then
-                hum.WalkSpeed = Config.WalkSpeed
-            end
-        end)
-    end
+    if not hum then return end
+    hum.WalkSpeed = Config.WalkSpeed
+    hum:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+        if Config.WalkSpeedBypass and hum.WalkSpeed < Config.WalkSpeed then
+            hum.WalkSpeed = Config.WalkSpeed
+        end
+    end)
 end
 
 -- ============================================================
@@ -368,87 +497,108 @@ local function GetClosestEnemy(range)
     if not char then return end
     local root = char:FindFirstChild("HumanoidRootPart")
     if not root then return end
-
     for _, enemy in ipairs(EnemiesFolder:GetChildren()) do
         local hum   = enemy:FindFirstChildOfClass("Humanoid")
         local eRoot = enemy:FindFirstChild("HumanoidRootPart")
         if hum and hum.Health > 0 and eRoot then
             local d = (eRoot.Position - root.Position).Magnitude
-            if d < dist then
-                closest = eRoot
-                dist    = d
-            end
+            if d < dist then closest = eRoot; dist = d end
         end
     end
     return closest
 end
 
-local originalNamecall
 if hookmetamethod then
+    local originalNamecall
     originalNamecall = hookmetamethod(game, "__namecall", function(self, ...)
         local method = getnamecallmethod()
         local args   = {...}
-
         if method:lower() == "fireserver" and Config.SilentAim then
             local name = originalNamecall(self, "Name")
-
             if name == "ShootGunEvent" and Config.AimBotGun then
                 local target = GetClosestEnemy(250)
                 if target and typeof(args[1]) == "Vector3" then
                     args[1] = target.Position
-                    if type(args[2]) == "table" then
-                        args[2] = {target}
-                    end
+                    if type(args[2]) == "table" then args[2] = {target} end
                 end
             elseif typeof(args[1]) == "Vector3" then
                 local target = GetClosestEnemy()
-                if target then
-                    args[1] = target.Position
-                end
+                if target then args[1] = target.Position end
             end
         end
-
         return originalNamecall(self, table.unpack(args))
     end)
 end
 
 -- ============================================================
--- AUTO CHEST FARM LOOP
+-- ESP
+-- ============================================================
+
+local ESPHighlights = {}
+
+function StartESP()
+    for _, enemy in ipairs(EnemiesFolder:GetChildren()) do
+        if not ESPHighlights[enemy] then
+            local h = Instance.new("Highlight")
+            h.FillColor    = Config.ESPColor
+            h.OutlineColor = Color3.fromRGB(255, 255, 255)
+            h.FillTransparency    = 0.5
+            h.OutlineTransparency = 0
+            h.Adornee = enemy
+            h.Parent  = enemy
+            ESPHighlights[enemy] = h
+        end
+    end
+    EnemiesFolder.ChildAdded:Connect(function(enemy)
+        if not Config.ESPEnabled then return end
+        task.wait(0.1)
+        if not ESPHighlights[enemy] then
+            local h = Instance.new("Highlight")
+            h.FillColor    = Config.ESPColor
+            h.OutlineColor = Color3.fromRGB(255, 255, 255)
+            h.FillTransparency    = 0.5
+            h.OutlineTransparency = 0
+            h.Adornee = enemy
+            h.Parent  = enemy
+            ESPHighlights[enemy] = h
+        end
+    end)
+end
+
+function StopESP()
+    for _, h in pairs(ESPHighlights) do
+        pcall(function() h:Destroy() end)
+    end
+    ESPHighlights = {}
+end
+
+-- ============================================================
+-- CHEST FARM LOOP
 -- ============================================================
 
 task.spawn(function()
     while task.wait(1) do
         if not Config.AutoChest then continue end
         if not IsAlive(Character) then WaitForRespawn() continue end
-
         local closest, dist = nil, math.huge
         for _, chest in ipairs(ChestsFolder:GetChildren()) do
             if not chest:GetAttribute("IsDisabled") then
-                local pos = chest:GetPivot().Position
-                local d   = GetDistance(pos)
-                if d < dist then
-                    closest = chest
-                    dist    = d
-                end
+                local d = GetDistance(chest:GetPivot().Position)
+                if d < dist then closest = chest; dist = d end
             end
         end
-
-        if closest then
-            Teleport(closest:GetPivot())
-            task.wait(0.5)
-        end
+        if closest then Teleport(closest:GetPivot()); task.wait(0.5) end
     end
 end)
 
 -- ============================================================
--- AUTO BERRY FARM LOOP
+-- BERRY FARM LOOP
 -- ============================================================
 
 task.spawn(function()
     while task.wait(1) do
         if not Config.AutoBerry then continue end
         if not IsAlive(Character) then WaitForRespawn() continue end
-
         for _, berry in ipairs(CollectionService:GetTagged("BerryBush")) do
             if berry.Parent and next(berry:GetAttributes()) ~= nil then
                 Teleport(berry.Parent:GetPivot())
@@ -468,24 +618,18 @@ function ServerHop()
         Window:Notify({ Title = "Server Hop", Content = "Server Browser tidak tersedia.", Time = 3 })
         return
     end
-
     local minPlayers   = Config.ServerHopMinPlayers
     local currentJobId = game.JobId
-    local page         = 1
-
+    local page = 1
     for i = 1, 100 do
         task.delay(i / 50, function()
-            local ok, result = pcall(function()
-                return ServerBrowser:InvokeServer(page)
-            end)
+            local ok, result = pcall(function() return ServerBrowser:InvokeServer(page) end)
             page += 1
-
             if ok and type(result) == "table" then
                 local bestCount, bestJob = minPlayers, nil
                 for jobId, data in pairs(result) do
                     if jobId ~= currentJobId and data.Count <= bestCount then
-                        bestCount = data.Count
-                        bestJob   = jobId
+                        bestCount = data.Count; bestJob = jobId
                     end
                 end
                 if bestJob then
@@ -499,10 +643,7 @@ end
 task.spawn(function()
     while task.wait(30) do
         if not Config.AutoServerHop then continue end
-        local players = #Players:GetPlayers()
-        if players >= Config.ServerHopMinPlayers then
-            ServerHop()
-        end
+        if #Players:GetPlayers() >= Config.ServerHopMinPlayers then ServerHop() end
     end
 end)
 
@@ -514,8 +655,7 @@ local QuestModule = loadstring(fetcher.get("{Utils}BloxFruits/GameModules/Quests
 local GuideModule = loadstring(fetcher.get("{Utils}BloxFruits/GameModules/GuideModule.lua"))()
 
 local function GetCurrentLevel()
-    local data = LocalPlayer:WaitForChild("Data")
-    return data:WaitForChild("Level").Value
+    return LocalPlayer:WaitForChild("Data"):WaitForChild("Level").Value
 end
 
 local function FindQuestForLevel(level)
@@ -529,7 +669,6 @@ local function FindQuestForLevel(level)
             end
         end
     end
-    return nil
 end
 
 local function AcceptQuest(npcName)
@@ -544,13 +683,10 @@ local function AcceptQuest(npcName)
             end
         end
     end
-    return false
 end
 
 local function GetActiveQuest()
-    local ok, result = pcall(function()
-        return InvokeCommF("getCurrentQuest")
-    end)
+    local ok, result = pcall(function() return InvokeCommF("getCurrentQuest") end)
     return ok and result or nil
 end
 
@@ -558,34 +694,19 @@ end
 -- AUTO FARM LOOP
 -- ============================================================
 
-local function GetQuestEnemies()
-    local quest = GetActiveQuest()
-    if not quest or not quest.Task then return {} end
-    local enemies = {}
-    for name in pairs(quest.Task) do
-        table.insert(enemies, name)
-    end
-    return enemies
-end
-
 local function FindEnemy(targetNames)
     local char = LocalPlayer.Character
     if not char then return end
     local root = char:FindFirstChild("HumanoidRootPart")
     if not root then return end
-
     local closest, dist = nil, math.huge
-
     for _, enemy in ipairs(EnemiesFolder:GetChildren()) do
         if not targetNames or #targetNames == 0 or table.find(targetNames, enemy.Name) then
             local hum   = enemy:FindFirstChildOfClass("Humanoid")
             local eRoot = enemy:FindFirstChild("HumanoidRootPart")
             if hum and hum.Health > 0 and eRoot then
                 local d = (eRoot.Position - root.Position).Magnitude
-                if d < dist then
-                    closest = enemy
-                    dist    = d
-                end
+                if d < dist then closest = enemy; dist = d end
             end
         end
     end
@@ -596,7 +717,6 @@ local function AttackEnemy(enemy)
     if not enemy then return end
     local eRoot = enemy:FindFirstChild("HumanoidRootPart")
     if not eRoot then return end
-
     local char = LocalPlayer.Character
     if not IsAlive(char) then return end
     local root = char:FindFirstChild("HumanoidRootPart")
@@ -611,36 +731,27 @@ local function AttackEnemy(enemy)
     if Config.AutoAttack then
         local tool = char:FindFirstChildOfClass("Tool")
         if tool then
-            local leftClick = tool:FindFirstChild("LeftClickRemote")
-            if leftClick then
-                leftClick:FireServer(eRoot.Position)
-            end
+            local lc = tool:FindFirstChild("LeftClickRemote")
+            if lc then lc:FireServer(eRoot.Position) end
         end
     end
 
     if Config.AutoShoot then
         local gunEvent = Remotes:FindFirstChild("ShootGunEvent")
-        if gunEvent then
-            gunEvent:FireServer(eRoot.Position, {eRoot})
-        end
+        if gunEvent then gunEvent:FireServer(eRoot.Position, {eRoot}) end
     end
 end
 
 task.spawn(function()
     while task.wait(0.1) do
         if not Config.AutoFarm then continue end
-
         local char = LocalPlayer.Character
-        if not IsAlive(char) then
-            WaitForRespawn()
-            continue
-        end
+        if not IsAlive(char) then WaitForRespawn() continue end
 
         if Config.AutoQuest then
             local quest = GetActiveQuest()
             if not quest then
-                local level     = GetCurrentLevel()
-                local questInfo = FindQuestForLevel(level)
+                local questInfo = FindQuestForLevel(GetCurrentLevel())
                 if questInfo then
                     AcceptQuest(questInfo.NPC)
                     task.wait(1)
@@ -648,11 +759,14 @@ task.spawn(function()
             end
         end
 
-        local targets = GetQuestEnemies()
-        local enemy   = FindEnemy(targets)
-        if enemy then
-            AttackEnemy(enemy)
+        local quest = GetActiveQuest()
+        local targets = {}
+        if quest and quest.Task then
+            for name in pairs(quest.Task) do table.insert(targets, name) end
         end
+
+        local enemy = FindEnemy(targets)
+        if enemy then AttackEnemy(enemy) end
     end
 end)
 
@@ -665,39 +779,22 @@ function RedeemCodes()
         local ok, codesRaw = pcall(function()
             return fetcher.get("{Utils}BloxFruits/Codes.json")
         end)
-
         if ok and codesRaw then
-            local HttpService = game:GetService("HttpService")
-            local codes = HttpService:JSONDecode(codesRaw)
+            local codes = game:GetService("HttpService"):JSONDecode(codesRaw)
             local count = 0
-
             for _, code in ipairs(codes) do
-                pcall(function()
-                    InvokeCommF("ReedemCode", code)
-                    count += 1
-                end)
+                pcall(function() InvokeCommF("ReedemCode", code); count += 1 end)
                 task.wait(0.2)
             end
-
-            Window:Notify({
-                Title   = "Redeem Codes",
-                Content = "Berhasil redeem " .. count .. " code!",
-                Time    = 4,
-            })
+            Window:Notify({ Title = "Redeem Codes", Content = "Berhasil redeem "..count.." code!", Time = 4 })
         end
     end)
 end
 
--- Auto redeem sekali saat load
 RedeemCodes()
 
 -- ============================================================
 -- SELESAI
 -- ============================================================
 
-return {
-    Config    = Config,
-    ServerHop = ServerHop,
-    Redeem    = RedeemCodes,
-    Window    = Window,
-}
+return { Config = Config, Window = Window, ServerHop = ServerHop, Redeem = RedeemCodes }
