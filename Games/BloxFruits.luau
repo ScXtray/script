@@ -1,4 +1,3 @@
-
 --[[
     REDZ HUB - Blox Fruits Script
     Repo: https://github.com/ScXtray/script
